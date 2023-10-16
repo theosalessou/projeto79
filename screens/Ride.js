@@ -69,11 +69,15 @@ export default class RideScreen extends Component {
           var { bikeType, userName } = this.state;
 
           this.assignBike(bikeId, userId, bikeType, userName);
-         
+          // Apenas para usuários Android
+          // ToastAndroid.show(
+          //   "Você alugou a bicicleta pela próxima 1 hora. Aproveite seu passeio!!",
+          //   ToastAndroid.SHORT
+          // );
 
-          
-          //Adicione uma caixa de alerta para exibir "Você alugou a bicicleta pela próxima 1 hora. Aproveite seu passeio!!"
-          
+          Alert.alert(
+            "Você alugou a bicicleta pela próxima 1 hora. Aproveite seu passeio!!"
+          );
 
           this.setState({
             bikeAssigned: true
@@ -83,7 +87,12 @@ export default class RideScreen extends Component {
 
           this.returnBike(bikeId, userId, bikeType, userName);
 
-        
+          // Apenas para usuários Android
+          // ToastAndroid.show(
+          //   "Esperamos que tenha gostado do seu passeio",
+          //   ToastAndroid.SHORT
+          // );
+
           Alert.alert("Esperamos que tenha gostado do seu passeio");
           this.setState({
             bikeAssigned: false
@@ -131,13 +140,13 @@ export default class RideScreen extends Component {
       date: firebase.firestore.Timestamp.now().toDate(),
       transaction_type: "rented"
     });
-    // mudar o status da bicicleta
+    //alterar status da bicicleta
     db.collection("bicycles")
       .doc(bikeId)
       .update({
         is_bike_available: false
       });
-    //mudar o valor da bicicleta alugada pelo usuário
+    //mudar o valor referente a bicicleta alugada pelo usuário
     db.collection("users")
       .doc(userId)
       .update({
@@ -160,13 +169,13 @@ export default class RideScreen extends Component {
       date: firebase.firestore.Timestamp.now().toDate(),
       transaction_type: "return"
     });
-    //mudar o status da bicicleta
+    //alterar status da bicicleta
     db.collection("bicycles")
       .doc(bikeId)
       .update({
         is_bike_available: true
       });
-    //mudar o valor da bicicleta alugada pelo usuário
+    //mudar o valor referente a bicicleta alugada pelo usuário
     db.collection("users")
       .doc(userId)
       .update({
@@ -190,18 +199,21 @@ export default class RideScreen extends Component {
       );
     }
     return (
-        <><View style={styles.upperContainer}>
-        <Image source={appIcon} style={styles.appIcon} />
-        <Text style={styles.title}>Ciclista Eletrônico</Text>
-        <Text style={styles.subtitle}>Um passeio ecologicamente correto</Text>
-      </View><View style={styles.lowerContainer}>
+      <KeyboardAvoidingView behavior="padding" style={styles.container}>
+        <View style={styles.upperContainer}>
+          <Image source={appIcon} style={styles.appIcon} />
+          <Text style={styles.title}>Ciclista Eletrônico</Text>
+          <Text style={styles.subtitle}>Um passeio ecologicamente correto</Text>
+        </View>
+        <View style={styles.lowerContainer}>
           <View style={styles.textinputContainer}>
             <TextInput
               style={[styles.textinput, { width: "82%" }]}
-              //Adicione o código para tornar TextInput editável para aceitar userID (Id do Usuário)
+              onChangeText={text => this.setState({ userId: text })}
               placeholder={"Id do Usuário"}
               placeholderTextColor={"#FFFFFF"}
-              value={userId} />
+              value={userId}
+            />
           </View>
           <View style={[styles.textinputContainer, { marginTop: 25 }]}>
             <TextInput
@@ -209,7 +221,8 @@ export default class RideScreen extends Component {
               onChangeText={text => this.setState({ bikeId: text })}
               placeholder={"Id da Bicicleta"}
               placeholderTextColor={"#FFFFFF"}
-              value={bikeId} />
+              value={bikeId}
+            />
             <TouchableOpacity
               style={styles.scanbutton}
               onPress={() => this.getCameraPermissions()}
@@ -222,10 +235,11 @@ export default class RideScreen extends Component {
             onPress={this.handleTransaction}
           >
             <Text style={styles.buttonText}>
-              {bikeAssigned ? "Finalizar passeio" : "Desbloquear"}
+              {bikeAssigned ? "Finalizar" : "Desbloquear"}
             </Text>
           </TouchableOpacity>
-        </View></>
+        </View>
+      </KeyboardAvoidingView>
     );
   }
 }
@@ -295,7 +309,7 @@ const styles = StyleSheet.create({
     alignItems: "center"
   },
   scanbuttonText: {
-    fontSize: 19,
+    fontSize: 18,
     color: "#4C5D70",
     fontFamily: "Rajdhani_600SemiBold"
   },
@@ -310,7 +324,7 @@ const styles = StyleSheet.create({
     borderColor: "#4C5D70"
   },
   buttonText: {
-    fontSize: 20,
+    fontSize: 24,
     color: "#4C5D70",
     fontFamily: "Rajdhani_600SemiBold"
   }
